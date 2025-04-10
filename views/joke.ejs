@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jokes</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #fef6e4, #fcd5ce); /* Light subtle background */
+        }
+
+        .container {
+            width: 60%;
+            max-width: 600px;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            animation: fadeIn 0.8s ease-in-out;
+            position: relative;
+        }
+        .star-button {
+            position: absolute;
+            top: 24px;  
+            right: 40px; 
+            font-size: 32px;  
+            color: #ccc;
+            cursor: pointer;
+            transition: 0.3s ease-in-out;
+        }
+
+        .star-button.selected {
+            color: gold;
+            text-shadow: 0 0 12px rgba(255, 215, 0, 0.9);
+        }
+
+
+
+        h2 {
+            font-size: 1.5rem;
+            color: #f97777;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .joke-card {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #333;
+            background: linear-gradient(135deg, #fef6e4, #fcd5ce);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px; /* Space between buttons */
+        }
+
+        .button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: #f97777;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s ease-in-out;
+            text-decoration: none;
+        }
+
+        .button:hover {
+            background: #f97777;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <span class="star-button <%= isFavorited ? 'selected' : '' %>"
+        data-joke="<%= data.joke || (data.setup + ' ' + data.delivery) %>"      
+        id="star"
+        >&#9733;</span>
+        <form action="joke" method="get">
+        <h2>Hey <%=String(user).charAt(0).toUpperCase() + String(user).slice(1).toLowerCase()%>,Time to Laugh!🤣</h2>
+        <div class="joke-card">
+            <strong class="joke"><%= data.joke||data.setup %><br><%= data.delivery %></strong><br>
+        </div>
+        <div class="button-container">
+            <a class="button" href="/logout" role="button">Log Out</a>
+            <a class="button" href="/new-joke" role="button">New Joke</a>
+            <a class="button" href="/favs" role="button">Favourites</a>
+        </div>        
+    </form>
+    </div>
+    <script>
+    const starBtn = document.getElementById("star");
+    starBtn.addEventListener("click", async () => {
+    const joke = starBtn.getAttribute("data-joke");
+    const isSelected = starBtn.classList.toggle("selected");
+
+    const endpoint = isSelected ? "/favorite" : "/remove-favorite";
+    
+    const res = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ joke })
+    });
+
+    if (!res.ok) {
+        alert("Failed to update favorite.");
+        // Revert the toggle if the request fails
+        starBtn.classList.toggle("selected");
+    }
+
+});
+    </script>
+</body>
+</html>
+
